@@ -51,15 +51,15 @@
                 <div class="more">
                     <div>
                         <span>语音咨询</span>
-                       <img src="./../../../static/img/yanjing.png" alt="">
+                        <img src="./../../../static/img/yuyin.png" alt="">
                     </div>
                     <div>
-                        <span>语音咨询</span>
-                        <img src="./../../../static/img/yanjing.png" alt="">
+                        <span>语音找人</span>
+                        <img src="./../../../static/img/yuyin.png" alt="">
                     </div>
                     <div>
-                        <span>语音咨询</span>
-                        <img src="./../../../static/img/yanjing.png" alt="">
+                        <span>查看更多</span>
+                        <img src="./../../../static/img/gengduo.png" alt="">
                     </div>
                 </div>
 
@@ -173,5 +173,8 @@ export default {
         background-color: #84b4b9;
         border-radius: 3px;
         cursor: pointer;
+    }
+    .more img{
+        margin-left: 15px;
     }
 </style>
