@@ -1,12 +1,17 @@
 <template>
-  <div id="app">
+  <div id="app" @contextmenu="stop($event)">
     <router-view/>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+   methods: {
+        stop ( ev ){
+            ev.preventDefault();
+        }
+    }
 }
 </script>
 
@@ -20,7 +25,7 @@ export default {
     text-align: center;
     color: #2c3e50;
   }
-	html, body, div, ul, li, h1, h2, h3, h4, h5, h6, p, dl, dt, dd, ol, form, input, textarea, th, td, select {
+	html, body, div, ul, li, h1, h2, h3, h4, h5, h6, p, dl, dt, dd, ol, form, input, textarea, th, td, select,figure {
 		margin: 0;
 		padding: 0;
 	}

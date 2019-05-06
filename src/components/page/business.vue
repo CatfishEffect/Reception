@@ -11,7 +11,7 @@
                 <!-- 开卡选项 -->
                 <div class="bar">
                     <div>
-                       <div class="open openAccount">
+                       <div @click="routerLinkToOpen" class="open openAccount">
                             <div>
                                 <img src="./../../../static/img/yanjing.png" alt="">
                                 <span>办理开户</span>
@@ -53,13 +53,13 @@
                         <span>语音咨询</span>
                         <img src="./../../../static/img/yuyin.png" alt="">
                     </div>
-                    <div>
+                    <div @click="routerLinkToDia">
                         <span>语音找人</span>
                         <img src="./../../../static/img/yuyin.png" alt="">
                     </div>
                     <div>
                         <span>查看更多</span>
-                        <img src="./../../../static/img/gengduo.png" alt="">
+                        <!-- <img src="./../../../static/img/gengduo.png" alt=""> -->
                     </div>
                 </div>
 
@@ -76,7 +76,18 @@
 </template>
 <script>
 export default {
-    
+    methods: {
+        routerLinkToOpen (){
+            this.$router.push({
+                path:'/open'
+            })
+        },
+        routerLinkToDia (){
+            this.$router.push({
+                path:'/dialogue'
+            })
+        }
+    }
 }
 </script>
 <style scoped>

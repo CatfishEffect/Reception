@@ -15,7 +15,12 @@
 </template>
 <script>
 export default {
-    
+    data (){
+        return {
+
+        }
+    },
+   
 }
 </script>
 <style scoped>
@@ -38,8 +43,8 @@ export default {
         width: 309px;
     }
     .main >div:last-child{
-        margin-left: 20px;
-        width: calc( 100% - 329px);
+        margin-left: 60px;
+        width: calc( 100% - 369px);
     }
 
 
