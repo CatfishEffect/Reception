@@ -3,10 +3,12 @@
         <div>
 
                 <!-- 联系客户经理 -->
-                <!-- <div  class="contact">
-                    <img src="./../../static/img/lianxikehujingli.png" alt="">
-                    <span>联系客户经理</span>
-                </div> -->
+                <div align="center" >
+                    <div class="contact-my">
+                        <img src="./../../../static/img/lianxikehujingli2.png" alt="">
+                        <h5>联系客户经理</h5>
+                    </div>
+                </div>
 
                 <!-- 开卡选项 -->
                 <div class="bar">
@@ -50,26 +52,22 @@
                 <!-- 更多 -->
                 <div class="more">
                     <div>
-                        <span>语音咨询</span>
                         <img src="./../../../static/img/yuyin.png" alt="">
+                        <router-link to="voicePrompts" tag="span">
+                            <span>语音咨询</span>
+                        </router-link>
                     </div>
                     <div @click="routerLinkToDia">
-                        <span>语音找人</span>
                         <img src="./../../../static/img/yuyin.png" alt="">
+                             <span>语音找人</span>
+                        
                     </div>
                     <div>
-                        <span>查看更多</span>
-                        <!-- <img src="./../../../static/img/gengduo.png" alt=""> -->
+                        <span>走进华西</span>
                     </div>
                 </div>
 
-                <!-- 联系客户经理 -->
-                <div align="center" >
-                    <div class="contact-my">
-                        <img src="./../../../static/img/lianxikehujingli2.png" alt="">
-                        <h5>联系客户经理</h5>
-                    </div>
-                </div>
+               
                 
             </div>
     </div>
@@ -91,6 +89,8 @@ export default {
 }
 </script>
 <style scoped>
+
+
     .line{
         margin-top: 74px;
         width: 100%;

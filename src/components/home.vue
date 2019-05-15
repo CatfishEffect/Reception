@@ -1,7 +1,7 @@
 <template>
     <div class="bg">
         <div>
-            <img src="./../../static/img/guangao.jpg" alt="ad">
+            <img src="./../../static/img/guangao.png" alt="ad">
         </div>
         <main class="main">
             <div>
@@ -29,7 +29,7 @@ export default {
     .bg{
         width: 1080px;
         height: 1920px;
-        background-image: url('./../../static/img/background.jpg');
+        
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;

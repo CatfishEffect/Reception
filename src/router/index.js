@@ -7,7 +7,8 @@ import myHome from '@/components/home.vue'
 import business from '@/components/page/business.vue'
 import open from '@/components/page/open.vue'
 import dialogue from '@/components/page/dialogue.vue'
-
+import voicePrompts from '@/components/page/VoicePrompts.vue'
+import registered from '@/components/page/Registered.vue'
 
 Vue.use(Router)
 
@@ -25,9 +26,18 @@ export default new Router({
 				{
 					path: '/open',
 					component: open,
-				},{
+				},
+				{
 					path: '/dialogue',
 					component: dialogue,
+				},
+				{
+					path: '/voicePrompts',
+					component: voicePrompts,
+				},
+				{
+					path: '/registered',
+					component: registered,
 				},
 			]
 		}
