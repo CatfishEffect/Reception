@@ -24,6 +24,10 @@ export default new Router({
 					component: business,
 				},
 				{
+					path: '/business',
+					component: business,
+				},
+				{
 					path: '/open',
 					component: open,
 				},

@@ -24,7 +24,7 @@
                     <span>投顾经理</span>
                 </div>
             </div>
-            <div class="btn-sure">确认</div>
+            <router-link class="btn-sure" to="/business" tag="div">确认</router-link>
         </div>
     </div>
 </template>
@@ -35,6 +35,7 @@ export default {
 </script>
 <style scoped>
 .btn-sure{
+    cursor: pointer;
     position: absolute;
     left: 0;
     bottom: 0;
