@@ -2,35 +2,101 @@
     <div>
         <div class="voiceList">
             <h3>您好，请问您想了解什么</h3>
-            <ol>
-                <li>关于账户挂失补办？</li>
-                <li>资料变更的相关信息？</li>
-                <li>证券账户合并的相关流程？</li>
-                <li>账户注销的相关流程？</li>
-                <li>非交易过户的相关流程？</li>
-                <li>密码修改与清密的相关流程？</li>
-                <li>资金账户销户的相关业务流程？</li>
-                <li>有关于资金管理业务？</li>
-                <li>清算交割的流程？</li>
-                <li>证券公司收费标准</li>
-                <li>炒股工具有哪些？</li>
-                <li>我想了解一下网上股票开户？</li>
-                <li>我想了解一下销户流程？</li>
-                <li>我想了解一下打新股？</li>
-            </ol>
+            <div class="ol" v-for="(item,index) in questionsList" :key="index">
+                <div @click="speakText(item.Stage)" class="li">{{item.ID}}.{{item.Stage}}</div>
+            </div>
         </div>
+        <div>
+            <img :src="resImg" alt="">
+        </div>
+        <router-link to="/business" class="sure" tag="div">
+            <el-button type="info">确认</el-button>
+        </router-link>
     </div>
 </template>
 <script>
 export default {
     data (){
         return {
-
+            resImg: '',
+            questionsList:[ ],
+            sysConfig: '',
+            sceneID: 123
         }
+    },
+    methods: {
+        getsceneID(){
+            console.log(this.sysConfig.OrgID);
+            this.$axios.get( this.$api.getSceneID,{
+                params: {
+                    orgID: this.sysConfig.OrgID,
+                    subject: '语音咨询'
+                }
+            } ).then(
+                res => {
+                    console.log(res);
+                    this.sceneID = res.data.Data.SceneID;
+                    this.getQuestionsList();
+                }
+            ).catch(
+                err => {
+                    console.log(err);
+                }
+            )
+        },
+        speakText( text ){
+            console.log(text);
+            this.$axios.get( this.$api.speakText,{
+                params: {
+                    sceneID: this.sceneID,
+                    words: text
+                }
+            } ).then(
+                res =>{
+                    console.log(res);
+                    this.resImg = 'http://www.reception.com/'+res.data.Data.CtxUrl;
+                    fwVoiceMonitor.speak(res.data.Data.Response);
+                }
+            ).catch(
+                err =>{
+                    console.log(err);
+                }
+            )
+        },
+        getQuestionsList (){
+            this.$axios.get( this.$api.getQuestionsList,{
+                params: {
+                    sceneID: this.sceneID,
+                    orgID: this.sysConfig.OrgID
+                }
+            } ).then(
+                res =>{
+                    console.log(res);
+                    this.questionsList = res.data.Data;
+                }
+            ).catch(
+                err =>{
+                    console.log(err);
+                }
+            )
+        },
+
+        //读取配置
+        readConfig() {
+            this.sysConfig = eval("(" + fwConfigReader.read() + ")");
+        },
+    },
+    created() {
+        this.readConfig();
+        this.getsceneID();
+
     }
 }
 </script>
 <style scoped>
+    .sure{
+        margin-top: 150px;
+    }
     h3{
         color: #fff;
     }
@@ -38,16 +104,20 @@ export default {
         box-sizing: border-box;
         padding: 20px 30px;
         background-color: #d98e75;
-        border-radius:  50px 20px 20px 0px;
+        border-radius:  50px 20px 20px 0;
     }
-    .voiceList ol{
+    .voiceList .ol{
         text-align: left;
-        padding: 20px 0;
         color: #fff;
         margin: 0 auto;
         width: 80%;
     }
-    .voiceList li{
+    .voiceList .li{
+        transition: all 1s linear;
         margin: 20px;
+        cursor: pointer;
+    }
+    .voiceList .li:hover{
+        text-decoration: underline;
     }
 </style>

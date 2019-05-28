@@ -3,14 +3,23 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import axios from 'axios'
+
 
 // elementUI
 import elementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
 
-Vue.use( elementUI )
+// api
+import api from './assets/api/api'
+axios.defaults.baseURL = 'http://www.reception.com';
+Vue.prototype.$api = api;
 
-Vue.config.productionTip = false
+Vue.prototype.$axios = axios;
+
+Vue.use( elementUI );
+
+Vue.config.productionTip = false;
 
 /* eslint-disable no-new */
 new Vue({

@@ -1,23 +1,22 @@
 <template>
     <div align="left">
-          <div class="btn">
+        <div class="btn">
             <button @click="dialogVisible = true">排号</button>
             <button @click="returnHome">返回</button>
         </div>
         <figure>
             <img src="./../../../static/img/tixing.png" alt="">
             <span class="content">
-                公司经营范围涵盖证券经纪业务，证券投资咨询，与证券交易、证券投资活动有关的财务顾问，证券承销与保荐，证券自营，
-                证券资产管理，证券投资基金代销，融资融券，代销金融产品，为期货公司提供中间介绍业务以及中国证监会批准的其他业务
+               {{myDetails.GuidText}}
             </span>
         </figure>
         <div>
-            <img class="openImg"  src="./../../../static/img/weizhidaotu.png" alt="">
+            <img class="openImg"  :src="'http://www.reception.com/'+myDetails.GuidImageUrl" alt="">
         </div>
-        <div>
-            <h5>开户流程</h5>
-            <img class="openImg"  src="./../../../static/img/kaihuliucheng.png" alt="">
-        </div>
+        <!--<div>-->
+            <!--<h5>开户流程</h5>-->
+            <!--<img class="openImg"  src="./../../../static/img/kaihuliucheng.png" alt="">-->
+        <!--</div>-->
 
         <!-- 排号module -->
         <div class="model" v-show="dialogVisible">
@@ -44,7 +43,9 @@
 export default {
     data (){
         return {
-            dialogVisible: false
+            dialogVisible: false,
+            id: '',
+            myDetails: ''
         }
     },
     methods: {
@@ -53,7 +54,31 @@ export default {
                 path:'/'
             })
         },
+        speak ( text ){
+            fwVoiceMonitor.speak(text);
+        },
+        getDetails(){
+            this.$axios.get( this.$api.getDetails,{
+                params: {
+                    id: this.id
+                }
+            } ).then(
+                res => {
+                    console.log(res);
+                    this.myDetails = res.data.Data;
+                }
+            ).catch(
+                err => {
+                    console.log(err);
+                }
+            )
+        }
        
+    },
+    created() {
+        this.id = this.$route.params.id;
+        this.speak('欢迎来到开户页面');
+        this.getDetails();
     }
 }
 </script>

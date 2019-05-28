@@ -9,8 +9,10 @@ import open from '@/components/page/open.vue'
 import dialogue from '@/components/page/dialogue.vue'
 import voicePrompts from '@/components/page/VoicePrompts.vue'
 import registered from '@/components/page/Registered.vue'
+import videoPlay from '@/components/page/VideoPlay.vue'
 
-Vue.use(Router)
+
+Vue.use(Router);
 
 export default new Router({
 	mode: 'history',
@@ -29,6 +31,7 @@ export default new Router({
 				},
 				{
 					path: '/open',
+					name: 'open',
 					component: open,
 				},
 				{
@@ -43,7 +46,12 @@ export default new Router({
 					path: '/registered',
 					component: registered,
 				},
+
 			]
-		}
+		},
+		{
+			path: '/videoPlay',
+			component: videoPlay,
+		},
 	]
 })

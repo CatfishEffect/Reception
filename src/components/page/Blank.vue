@@ -2,6 +2,12 @@
     <div>
         <div class="dialogue">
             <div>已通知xxx,请稍后...</div>
+            <router-link to="/business">
+                <el-button type="info">提交</el-button>
+            </router-link>
+            <router-link to="/business" class="sure" tag="div">
+                <el-button type="info">确认</el-button>
+            </router-link>
         </div>
     </div>
 </template>

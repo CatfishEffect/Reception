@@ -1,15 +1,22 @@
 <template>
     <div>
         <div class="dialogue">
-            <div>您好，请问您找谁？</div>
-            <div>我找XXX</div>
-            <div>以下是XXX的信息请确认</div>
-            <div>好的，谢谢</div>
+            <div v-for="(item,index) in questionsData" :key="index">
+                {{item}}
+            </div>
+
         </div>
         <!-- line -->
         <div class="line"></div>
 
-        <div class="info">
+        <div class="btn">
+            <el-button @click="voiceStart" >点击询问</el-button>
+            <router-link to="/business" tag="span">
+                <el-button >回到首页</el-button>
+            </router-link>
+        </div>
+
+        <div v-show="isShow" class="info">
             <div class="customer-photo">
                 <img src="./../../../static/img/kehu.png" alt="">
             </div>
@@ -30,10 +37,112 @@
 </template>
 <script>
 export default {
-    
+    data (){
+        return {
+            isShow: false,
+            sysConfig: '',
+            customerName: '',
+            questionsData: [ '请问您找谁' ],
+            answeredData: [ ]
+        }
+    },
+    mounted(){
+        window.listenCallBack =  ( msg )=> {
+            this.listenCallBack(msg);
+        }
+    },
+    methods: {
+
+        //语音找人
+        findPeople(){
+            this.$axios.get( this.$api.findPeopleData,{
+                params: {
+                    orgID: this.sysConfig.OrgID,
+                    branchID: this.sysConfig.BranchID,
+                    name: this.customerName
+                }
+            } ).then(
+                res => {
+                    console.log(res);
+                    if ( res.data.Result === false ) {
+                        this.questionsData.push(res.data.Message);
+                        this.speak( res.data.Message );
+                    }else if ( res.data.Result === true ) {
+                        this.isShow = true;
+                    }
+                }
+            ).catch(
+                err => {
+                    console.log(err);
+                }
+            )
+        },
+
+        //语音询问
+        speak ( text ){
+            fwVoiceMonitor.speak(text);
+        },
+
+        listenCallBack( msg ){
+            console.log(msg);
+            this.customerName = msg;
+            this.voiceStop();
+            this.questionsData.push(this.customerName);
+            this.findPeople();
+        },
+
+        voiceStart(){
+            fwVoiceMonitor.startListen("listenCallBack");
+        },
+
+        voiceStop(){
+            fwVoiceMonitor.stopListen();
+        },
+
+        //语音转文字
+        hear (){
+            this.customerName = fwVoiceMonitor.hear();
+            this.questionsData.push(this.customerName);
+            this.findPeople();
+            console.log(this.questionsData);
+        },
+
+        //读取配置
+        readConfig() {
+            this.sysConfig = eval("(" + fwConfigReader.read() + ")");
+        },
+
+    },
+    created () {
+        this.readConfig();
+        this.speak( '请说出您要找的人姓名' );
+    },
+    destroyed() {
+        this.voiceStop();
+    }
 }
 </script>
 <style scoped>
+
+    .btn button:hover{
+        transition: all 0.3s linear;
+        background-color: #c52627;
+        color: #fff;
+    }
+
+
+    .btn button{
+        margin: 30px 0;
+        cursor: pointer;
+        width: 240px;
+        height: 68px;
+        background-color: #fff;
+        color: #c52627;;
+        border-radius: 10px;
+        font-size: 24px;
+        box-shadow: 0 3px 3px rgba(186, 28, 29, .25)
+    }
+
 .btn-sure{
     cursor: pointer;
     position: absolute;
