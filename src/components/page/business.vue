@@ -1,94 +1,93 @@
 <template>
     <div>
         <div>
-
-                <!-- 联系客户经理 -->
-                <div align="right" >
-                    <div class="contact-my">
-                        客户经理
+            <!-- 开户选项 -->
+            <div v-if="isMenuShow" class="bar">
+                <div v-for="(item,index) in menuList" :key="index">
+                    <div @click="routerLinkToOpen(item.ID,item.Title)" class="open" :class="item.IssueStyle">
+                    </div>
+                    <div class="text">
+                        {{item.Title}}
                     </div>
                 </div>
+            </div>
 
-                <!-- 开户选项 -->
-                <div class="bar">
-                    <div v-for="(item,index) in menuList" :key="index">
-                        <div @click="routerLinkToOpen(item.ID)" class="open" :class="item.IssueStyle">
-                        </div>
-                        <div class="text">
-                            {{item.Title}}
-                        </div>
+            <!-- 更多 -->
+            <div class="more">
+                <router-link to="voicePrompts" tag="div">
+                    <div>
+                        <img src="./../../../static/img/icon-voice.png" alt="">
+                        <span>语音咨询</span>
                     </div>
-                </div>
-
-                <!-- line -->
-                <!--<div class="line"></div>-->
-
-                <!-- 更多 -->
-                <div class="more">
-                    <router-link to="voicePrompts" tag="div">
-                        <div>
-                            <span>语音咨询</span>
-                        </div>
-                    </router-link>
+                </router-link>
                     <div @click="routerLinkToDia">
+                        <img src="./../../../static/img/icon-voice.png" alt="">
                         <span>语音找人</span>
                     </div>
-                    <router-link to="videoPlay" tag="div">
-                        <div>
-                            <span>走进华西</span>
-                        </div>
-                    </router-link>
-                </div>
-
+                <router-link to="videoPlay" tag="div">
+                    <div>
+                        <img src="./../../../static/img/icon-go.png" alt="">
+                        <span>走进华西</span>
+                    </div>
+                </router-link>
             </div>
+
+        </div>
     </div>
 </template>
 <script>
+    import qs from 'qs'
+    import { mapGetters,mapActions } from 'vuex'
 export default {
     data(){
       return{
           sysConfig: '',
-          menuList: [
-              // {
-              //     id: 1,
-              //     menuName: '办理开户',
-              //     className: 'openAccount',
-              //     bgImg: './../../../static/img/yanjing.png',
-              //     description: 'ACCOUNT OPENING'
-              // },
-              // {
-              //     id: 2,
-              //     menuName: '投顾咨询',
-              //     className: 'consultation',
-              //     bgImg: './../../../static/img/yanjing.png',
-              //     description: 'CONSULTATION'
-              // },
-              // {
-              //     id: 3,
-              //     menuName: '办理业务',
-              //     className: 'business',
-              //     bgImg: './../../../static/img/yanjing.png',
-              //     description: 'HANDLE BUSINESS'
-              // },
-              // {
-              //     id: 4,
-              //     menuName: '来访办事',
-              //     className: 'visit',
-              //     bgImg: './../../../static/img/yanjing.png',
-              //     description: 'VISIT SERVICE'
-              // },
-          ],
-          idCard: ''
+          menuList: [],
+          idCard: '',
+          timer: ''
       }
     },
+    computed: {
+        ...mapGetters( ['count'] ),
+        ...mapGetters(['isMenuShow'])
+    },
+
     methods: {
-        routerLinkToOpen ( id ){
+
+
+
+        //获取到访意图
+        getIntention(id,intention){
+            console.log('意图',id);
+
+            let obj = {};
+            obj.IsSueID = id;
+            obj.CustID = localStorage.getItem('customerID');
+            obj.Intention = intention;
+
+            this.$axios.post( this.$api.getIntention,qs.stringify( obj ) ).then(
+                res => {
+                    console.log('到访意图',res);
+                }
+            ).catch(
+                err => {
+                    console.log(err);
+                }
+            )
+        },
+
+        ...mapActions( ['add','sub']),
+        routerLinkToOpen ( id,intention ){
+            fwVoiceMonitor.stopSpeak();     //停止语音
+            let intentionId = localStorage.getItem('customerID');
+            this.getIntention(id,intention);
             this.$router.push({
                 name:'open',
                 params: {
-                    id: id
+                    id: id,
+                    customID: intentionId
                 }
-            })
+            });
         },
         routerLinkToDia (){
             this.$router.push({
@@ -131,16 +130,25 @@ export default {
     },
     created (){
         this.readConfig();
-        this.getMenuList();
 
+        this.timer = setTimeout(
+            ()=>{
+                this.getMenuList();
+            },100
+        )
+    },
+    beforeDestroy() {
+        clearInterval(this.timer);
     }
 }
 </script>
 <style scoped>
+
     .text{
         margin-top: 32px;
-        color: black;
+        color: #333;
         font-size: 24px;
+        font-weight: bolder;
     }
 
     .line{
@@ -150,7 +158,7 @@ export default {
         background: rgba(206, 180, 128, .3);
     }
     .contact-my{
-
+        cursor: pointer;
         text-align: center;
         width: 150px;
         color: white;
@@ -206,30 +214,40 @@ export default {
         vertical-align: middle;
     }
     .bar{
-        margin-top: 73px;
+        margin-top: 20px;
         color: #fff;
         display: flex;
         flex-flow: row wrap;
         justify-content: space-between;
+
     }
     .bar>div{
-        margin: 0 30px;
+        margin: 0 60px;
+
     }
     .more {
+        margin: 0 auto;
         margin-top: 74px;
+        width: 500px;
+
     }
     .more > div{
         margin-top: 26px;
         width: 100%;
         height: 68px;
         line-height: 68px;
-        color: black;
+        color: #c52627;
         font-size: 20px;
-        border-radius: 3px;
+        border-radius: 68px;
         cursor: pointer;
-        border: 1px solid gray;
+        background-color: #fff;
+        box-shadow: 0 5px 5px rgba(156,156,156,.2);
     }
+    /*.more > div:hover{*/
+        /*color: white;*/
+        /*background-color: #c52627;*/
+    /*}*/
     .more img{
-        margin-left: 15px;
+        margin: 0 15px;
     }
 </style>

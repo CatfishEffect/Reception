@@ -18,12 +18,17 @@
 </script>
 
 <style>
+
+    body{
+        background-color: #f5f5f5;
+    }
     /*隐藏竖向滚动条*/
     ::-webkit-scrollbar {
         display: none
     }
 
     #app {
+
         font-family: Helvetica;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
@@ -46,4 +51,5 @@
         border: none;
         background-color: transparent;
     }
+
 </style>

@@ -1,15 +1,15 @@
 <template>
     <div class="video">
         <div align="left">
-            <video id="myVideo" @click="isPlayVideo" :src="videoSrc" width="1080px" height="608px" autoplay muted></video>
+            <video id="myVideo" @click="isPlayVideo" :src="videoSrc" width="1080px" height="608px" controls autoplay></video>
         </div>
         <div class="btn">
-            <button @click="returnHome">返回</button>
+            <myButton/>
         </div>
         <div class="playList">
             <div v-for="(item,index) in videoList" :key="index">
                 <div @click="playNowVideo(item.CtxUrl)">
-                    <img class="cover" src="./../../../static/img/video-one.png" alt="">
+                    <img class="cover" :src="$url+item.Response" alt="">
                     <img class="videoIcon" src="./../../../static/img/icon-video-small.png" alt="">
                 </div>
                 <div class="figure" align="left">
@@ -18,10 +18,32 @@
                 </div>
             </div>
         </div>
+        <div class="Isolation-zone"></div>
+        <div class="info" align="left">
+            <h3>
+                <span class="cylinder"></span>
+                公司简介
+            </h3>
+            <div class="line"></div>
+            <div>
+                <h4>公司概况</h4>
+                <p>
+                    公司前身四川省证券股份有限公司和四川证券交易中心分别成立于1988年和1991年，
+                    是国内最早成立的专业证券公司之一和全国首家区域性交易场所。
+                    非上市国有企业10家，其他19家；其中，泸州老窖股份有限公司持股比例为24.99%，
+                    是公司的第一大股东和实际控制人。其他大股东还包括四川华能太平驿水电有限责任公司、剑南春集团、
+                    都江堰电力公司、剑南春融信投资有限公司、五粮液酒厂、涪陵投资集团和四川明星电力股份有限公司等。
+                    华西证券在全国拥有近70家证券营业部家，遍布四川、北京、上海、天津、重庆、南京、广州、武汉、深圳、大连和杭州等地。
+                    其中，成都高升桥营业部市场占有率排名稳居四川省第一，北京营业部在北京地区市场占有率排名前五，深圳营业部在深圳的市场占有率中排名前十。
+                </p>
+                <div class="line small"></div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
+    import myButton from './../common/MyButton'
     export default {
         name: "VideoPlay",
         data (){    
@@ -31,15 +53,34 @@
                 sysConfig: '',
                 myVideo: '',
                 videoList: [ ],
-                videoSrc: ''
+                videoSrc: '',
+
             }
+        },
+        components: {
+            myButton
+        },
+        mounted() {
+            window.monitorCallBack =  ( event,template64,portrait64 )=> {
+                this.monitorCallBack(event,template64,portrait64);
+            };
         },
         methods: {
 
-            returnHome (){
-                this.$router.push({
-                    path:'/'
-                })
+            //启动人脸
+            startMonitor() {
+                console.log('开启人脸');
+                fwFaceMonitor.startMonitor('monitorCallBack');
+            },
+
+            //是否进入
+            monitorCallBack(event,template64,portrait64) {
+                console.log('人走还是留',event);
+                if (event) {
+                    this.$router.push({
+                        path: '/business'
+                    });
+                }
             },
 
             //暂停与播放
@@ -55,7 +96,7 @@
 
             //playNowVideo
             playNowVideo ( videoSrc ){
-                this.videoSrc = 'http://www.reception.com/'+ videoSrc;
+                this.videoSrc = this.$url + videoSrc;
             },
 
             //请求视频资源
@@ -63,13 +104,15 @@
                 this.$axios.get( this.$api.getQuestionsList,{
                     params: {
                         orgID: this.sysConfig.OrgID,
-                        sceneID: this.scenesID
+                        sceneID: this.scenesID,
+                        pageIndex: 1,
+                        pageSize: 10
                     }
                 } ).then(
                     res => {
                         console.log(res);
                         this.videoList = res.data.Data;
-                        this.videoSrc = 'http://www.reception.com/'+ res.data.Data[0].CtxUrl;
+                        this.videoSrc = this.$url + res.data.Data[0].CtxUrl;
                     }
                 ).catch(
                     err => {
@@ -103,6 +146,10 @@
             readConfig() {
                 this.sysConfig = eval("(" + fwConfigReader.read() + ")");
             },
+            //停止人脸
+            stopMonitor() {
+                fwFaceMonitor.stopMonitor();
+            }
             //@mouseenter="playMyVideo" @mouseleave="pauseMyVideo"
             // playMyVideo (){
             //     let myVideo = document.getElementById('myVideo');
@@ -116,29 +163,65 @@
         created (){
             this.readConfig();
             this.getScenesID();
+            this.startMonitor();
+        },
+        beforeDestroy() {
+            this.stopMonitor();
         }
     }
 </script>
 
 <style scoped>
-
-    .btn button:hover{
-        transition: all 0.3s linear;
-        background-color: #c52627;
-        color: #fff;
+    .cylinder{
+        display: inline-block;
+        width: 5px;
+        height: 38px;
+        background-color: #be9f5f;
+        vertical-align:middle;
+    }
+    .Isolation-zone{
+        width: 100%;
+        height: 10px;
+        background-color: #e9e9e9;
+    }
+    .info{
+        padding: 70px;
+    }
+    .info h3{
+        margin: 20px 0;
+        font-size: 30px;
+        color: #333;
+        height: 38px;
+        line-height: 38px;
+    }
+    .info h4{
+        font-size: 26px;
+        margin: 40px 0;
     }
 
+    .info p{
+        text-indent: 2em;
+        font-size: 20px;
+        color: #3d3d3d;
+        letter-spacing: 1px;
+        word-break: break-all;
+        line-height: 30px;
+    }
 
-    .btn button{
-        margin: 30px 0;
-        cursor: pointer;
-        width: 240px;
-        height: 68px;
-        background-color: #fff;
-        color: #c52627;;
-        border-radius: 10px;
-        font-size: 24px;
-        box-shadow: 0 3px 3px rgba(186, 28, 29, .25)
+    .line{
+        margin-left: -50px;
+        width: 1080px;
+        height: 2px;
+        background-color: #be9f5f;
+    }
+    .small{
+        margin-top: 40px;
+        height: 1px;
+        background-color: #bababa;
+    }
+
+    .btn{
+        margin: 60px;
     }
 
     .video{
@@ -150,7 +233,6 @@
         display: flex;
         flex-flow: row wrap;
         padding: 30px 50px;
-
     }
     .cover{
         transition: all .3s linear;

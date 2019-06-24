@@ -1,22 +1,26 @@
 <template>
     <div align="left">
-        <div class="btn">
-            <button @click="dialogVisible = true">排号</button>
-            <button @click="returnHome">返回</button>
+        <div align="right" >
+            <div @click="open1" class="contact-my">客户经理</div>
         </div>
-        <figure>
-            <img src="./../../../static/img/tixing.png" alt="">
-            <span class="content">
-               {{myDetails.GuidText}}
-            </span>
-        </figure>
+        <el-dialog
+                :visible.sync="centerDialogVisible"
+                width="500px"
+                center>
+            <div class="displayImg" align="center">
+                <img src="./../../../static/img/1.gif" alt="连线中...">
+                <p>已通知客户经理，请稍候...</p>
+            </div>
+        </el-dialog>
+        
+        <div class="waitBtn">
+            <button v-if="isWait" @click="dialogVisible = true">排队</button>
+            <myButton/>
+        </div>
+
         <div>
-            <img class="openImg"  :src="'http://www.reception.com/'+myDetails.GuidImageUrl" alt="">
+            <img class="openImg"  :src="myDetails" alt="">
         </div>
-        <!--<div>-->
-            <!--<h5>开户流程</h5>-->
-            <!--<img class="openImg"  src="./../../../static/img/kaihuliucheng.png" alt="">-->
-        <!--</div>-->
 
         <!-- 排号module -->
         <div class="model" v-show="dialogVisible">
@@ -40,22 +44,47 @@
     </div>
 </template>
 <script>
+    import myButton from './../common/MyButton'
 export default {
     data (){
         return {
+            centerDialogVisible: false,
+            textContent: '',
             dialogVisible: false,
             id: '',
-            myDetails: ''
+            myDetails: '',
+            customID: '',
+            isWait: true
         }
     },
+    components:{
+        myButton
+    },
     methods: {
-        returnHome (){
-            this.$router.push({
-                path:'/'
-            })
-        },
         speak ( text ){
             fwVoiceMonitor.speak(text);
+        },
+
+        //通知消息
+        open1() {
+
+            this.centerDialogVisible = true;
+            this.$axios.get(this.$api.contactManager,{
+                params: {
+                    customID: this.customID,
+                    ID: this.id
+                }
+            }).then(
+                res => {
+                    console.log(res);
+                }
+            ).catch(
+                err => {
+                    console.log(err);
+                }
+            );
+
+            this.speak('已通知客户经理，请稍候...');
         },
         getDetails(){
             this.$axios.get( this.$api.getDetails,{
@@ -65,7 +94,13 @@ export default {
             } ).then(
                 res => {
                     console.log(res);
-                    this.myDetails = res.data.Data;
+                    this.myDetails = this.$url + res.data.Data.GuidImageUrl;
+                    this.textContent = res.data.Data.GuidText;
+                    this.speak(this.textContent);
+
+                    if ( res.data.Data.QueueScript == '' ){
+                        this.isWait = false;
+                    }
                 }
             ).catch(
                 err => {
@@ -77,12 +112,38 @@ export default {
     },
     created() {
         this.id = this.$route.params.id;
-        this.speak('欢迎来到开户页面');
+        this.customID = this.$route.params.customID;
+
         this.getDetails();
     }
 }
 </script>
 <style scoped>
+    .displayImg{
+        margin: 0;
+    }
+    .displayImg p{
+        color: #999;
+        font-size: 26px;
+        padding-bottom: 30px;
+    }
+
+    .waitBtn{
+        margin-top: 30px;
+    }
+    .contact-my{
+        position: relative;
+        right: -60px;
+        cursor: pointer;
+        text-align: center;
+        width: 150px;
+        color: white;
+        font-size: 20px;
+        height: 50px;
+        line-height: 50px;
+        background-color: #ec3b3c;
+        border-radius: 50px 0 0 50px;
+    }
 
 .model{
     width: 100%;
@@ -101,6 +162,18 @@ export default {
     cursor: pointer;
 }
 
+    .sure>button{
+        cursor: pointer;
+        position: absolute;
+        bottom: 0;
+        border-radius: 0 0 10px 10px;
+        width: 100%;
+        height: 82px;
+        line-height: 82px;
+        background: #c52627;
+        font-size: 28px;
+        color: white;
+    }
 
 /* 排队dialog */
 .dialog{
@@ -122,7 +195,7 @@ export default {
 .myTitle{
     margin: 30px auto;
     font-size: 30px;
-    background-color: #c52627;
+    background-color: #c0a264;
     color: #fff;
     width: 60px;
     height: 60px;
@@ -149,22 +222,9 @@ export default {
      color: #333;
 }
 
-.sure button{
-    cursor: pointer;
-    position: absolute;
-    bottom: 0;
-    border-radius: 0 0 10px 10px;
-    width: 100%;
-    height: 82px;
-    line-height: 82px;
-    background: #c0a264;
-    font-size: 28px;
-    color: white;
-}
-
-
 
 .openImg{
+    margin-top: 70px;
     width: 591px;
     height: auto;
 }
@@ -187,24 +247,47 @@ h5{
     margin-bottom: 50px;
 }
 
-.btn button:hover{
-    transition: all 0.3s linear;
-    background-color: #c52627;
-    color: #fff;
-}
+/*.waitBtn button:hover{*/
+    /*transition: all 0.3s linear;*/
+    /*background-color: #c52627;*/
+    /*color: #fff;*/
+/*}*/
 
 
-.btn button{
+.waitBtn button{
     cursor: pointer;
     width: 240px;
     height: 68px;
-    background-color: #fff;
+    border: 1px solid #c52627;
     color: #c52627;;
     border-radius: 10px;
     font-size: 24px;
-    box-shadow: 0 3px 3px rgba(186, 28, 29, .25)
 }
-.btn button:last-child{
+.waitBtn button:last-child{
     margin-left: 80px;
 }
+
+
+</style>
+<style>
+    .el-dialog__wrapper{
+        padding-top: 20vh;
+    }
+     .el-dialog{
+        border: none;
+    }
+     .el-dialog__body{
+     }
+     .el-icon{
+         color: white;
+     }
+     .el-icon-close{
+         color: white;
+     }
+    .el-dialog__close{
+        color: white;
+    }
+    .el-dialog__body>div{
+        margin-top: 0;
+    }
 </style>
